@@ -15,8 +15,8 @@
 #' @export
 map_specificity_to_entrez <- function(genesOutFile,ctd,annotLevel,specificity_species){
     # Check specificity_species
-    if(!specificity_species %in% c("human","mouse")){stop("Specificity species must be either 'human' or 'mouse'")}
-    
+    if(specificity_species %in% c("human","mouse")){
+        
     data(all_hgnc_wtEntrez)
     colnames(all_hgnc_wtEntrez)[1] = "human.symbol"
     
@@ -40,6 +40,33 @@ map_specificity_to_entrez <- function(genesOutFile,ctd,annotLevel,specificity_sp
         entrezTable = all_hgnc_wtEntrez[all_hgnc_wtEntrez$human.symbol %in% humanSymsPresent,]
         quantDat = ctd[[annotLevel]]$specificity_quantiles[as.character(entrezTable$human.symbol),]
         quantDat2 = suppressWarnings(data.frame(entrez=entrezTable$entrez,quantDat))
+        quantDat2 = quantDat2[!duplicated(quantDat2$entrez),]
+    }
+    } else {
+        
+        print("generating ortholog data for specific specificity species.")
+        data(all_hgnc_wtEntrez)
+        colnames(all_hgnc_wtEntrez)[1] = "human.symbol"
+
+        library(One2One)
+
+        # Download and format the homolog data from MGI
+        allHomologs = load.homologs()
+
+        # Get data on orthology between the two species
+        species1 = "human" #this needs to be the gwas_species
+        species2 = specificity_species
+        ortholog_data = analyse.orthology(species1,species2,allHomologs)
+
+        # Because sumstats use entrez genes & ctd uses gene symbols, match entrez-->symbols
+        entrez_mgi = merge(all_hgnc_wtEntrez,ortholog_data$orthologs_one2one[,2:3],by="human.symbol")
+        entrez_mgi = entrez_mgi[!is.na(entrez_mgi$entrezgene),]
+        #the third column in the entrez_mgi data.frame is 'specificity_species'.symbol
+        entrez_mgi = entrez_mgi[entrez_mgi[[3]] %in% rownames(ctd[[annotLevel]]$specificity_quantiles),] 
+
+        # Get the quantiles from ctd and put into correct format, using entrez symbols
+        quantDat = ctd[[annotLevel]]$specificity_quantiles[entrez_mgi[[3]],]
+        quantDat2 = suppressWarnings(data.frame(entrez=entrez_mgi$entrezgene,quantDat))
         quantDat2 = quantDat2[!duplicated(quantDat2$entrez),]
     }
     return(quantDat2)

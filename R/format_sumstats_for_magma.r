@@ -8,7 +8,7 @@
 #' @import data.table
 #' @import stringr
 #' @export
-format_sumstats_for_magma <- function(path){
+format_sumstats_for_magma <- function(path, N){
   
   # Checking if the file exists should happen first
   if (!file.exists(path)) {stop("Path to GWAS sumstats is not valid")}
@@ -165,11 +165,11 @@ format_sumstats_for_magma <- function(path){
 
   sumstats <- fread(path)
     # MAGMA cannot handle P-values as low as 3e-400... so convert them to zeros
-    if (as.logical(as.numeric(readline("MAGMA cannot handle P-values as low as 3e-400. Do you want MAGMA.celltyping to convert any (if) existing ones to zeroes? 0 for NO, 1 for YES")))) {
-      rows_of_data <- c(sumstats_file[1], sumstats_file[2]); col_headers = strsplit(rows_of_data[1], "\t")[[1]]
-      sumstats$P = as.numeric(as.character(sumstats$P)) # Note, I've not tested this since changing it from the original code... which was using gawk/sed
-    }
-    fwrite(x=sumstats, file=path, sep="\t") #, quote=FALSE, row.names = FALSE, col.names = FALSE)
+    #if (as.logical(as.numeric(readline("MAGMA cannot handle P-values as low as 3e-400. Do you want MAGMA.celltyping to convert any (if) existing ones to zeroes? 0 for NO, 1 for YES")))) {
+  rows_of_data <- c(sumstats_file[1], sumstats_file[2]); col_headers = strsplit(rows_of_data[1], "\t")[[1]]
+  sumstats$P = as.numeric(as.character(sumstats$P)) # Note, I've not tested this since changing it from the original code... which was using gawk/sed
+    #}
+  fwrite(x=sumstats, file=path, sep="\t") #, quote=FALSE, row.names = FALSE, col.names = FALSE)
     
   sumstats_file <- readLines(path)
   
@@ -177,7 +177,7 @@ format_sumstats_for_magma <- function(path){
   # - I edited this on 3rd April 2020 so it uses data.table... but don't have a dataset to check that it still works
   if("N" %in% col_headers) {
     #whichN = which(col_headers %in% "N")
-    if (as.logical(as.numeric(readline("Sometimes the N column is not all integers. Do you want MAGMA.celltyping to (if such instances exist) round them up? 0 for NO, 1 for YES")))) {
+    print("Sometimes the N column is not all integers. MAGMA.celltyping will round them up if such instances exist.")
       #rows_of_data <- c(sumstats_file[1], sumstats_file[2]); col_headers = strsplit(rows_of_data[1], "\t")[[1]]
       sumstats <- fread(path) # read.table(path)
       sumstats$N = round(as.numeric(as.character(sumstats$N))) # Note, I've not tested this since changing it from the original code... which was using gawk/sed
@@ -186,8 +186,13 @@ format_sumstats_for_magma <- function(path){
       #  if (sumstats[i,which(col_headers=="N")]=="N") {next} # To skip the header.
       #  sumstats[i,which(col_headers=="N")] <- round(as.numeric(as.character(sumstats[i,which(col_headers=="N")]))) # This converts anything under 3e-400 to zeros.
       #}
-      #write.table(x=sumstats, file=path, sep="\t", quote=FALSE, row.names = FALSE, col.names = FALSE); sumstats_file <- readLines(path)
-    }
+      #write.table(x=sumstats, file=path, sep="\t", quote=FALSE, row.names = FALSE, col.names = FALSE); sumstats_file <- readLines(path)  
+   } else {
+     print("There is no N column in the summary statistics file. Adding N column based on N argument.")
+     sumstats <- fread(path) # read.table(path)
+     sumstats$N = N
+     sumstats$N = round(as.numeric(as.character(sumstats$N))) # Note, I've not tested this since changing it from the original code... which was using gawk/sed
+     fwrite(x=sumstats, file=path, sep="\t") #, quote=FALSE, row.names = FALSE, col.names = FALSE)
   }
   
   # All rows should start with either SNP or rs... if they don't drop them
