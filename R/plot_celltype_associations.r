@@ -65,7 +65,7 @@ plot_celltype_associations <- function(ctAssocs,ctd,useSignificanceLine=TRUE,sav
         if(plotDendro==TRUE){
             # Order cells by dendrogram
             ctdDendro = get.ctd.dendro(ctd,annotLevel=annotLevel)
-            ctAssocs[[annotLevel]]$results$Celltype <- factor(ctAssocs[[annotLevel]]$results$Celltype, levels=gsub(" |\\(|\\)","\\.",ctdDendro$ordered_cells))
+            ctAssocs[[annotLevel]]$results$Celltype <- factor(ctAssocs[[annotLevel]]$results$Celltype, levels=gsub(" |\\(|\\)|\\-|\\,","\\.",ctdDendro$ordered_cells))
         }
         
         a2 <- ggplot(ctAssocs[[annotLevel]]$results, aes_string(x = "factor(Celltype)", y = "log10p", fill="FullMethod")) + scale_y_reverse()+geom_bar(stat = "identity",position="dodge") + coord_flip() + ylab(expression('-log'[10]*'(pvalue)')) + xlab("")

@@ -36,6 +36,11 @@ load.magma.results.file <- function(path,annotLevel,ctd,genesOutCOND=NA,Enrichme
   res$level=annotLevel
   res=res[-1,]
   
+  # The VARIABLE column in MAGMA output is limited by 30 characters. 
+  # If so, use the FULL_NAME column.
+  if(!is.null(res$FULL_NAME)){res$VARIABLE <- res$FULL_NAME}
+
+  
   # Check if some of the variables are ZSTAT (if so, this indicates that another GWAS is being controlled for)
   isConditionedOnGWAS=sum(grepl("ZSTAT",colnames(res)))>0
   
