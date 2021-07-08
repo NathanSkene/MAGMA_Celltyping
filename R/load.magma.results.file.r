@@ -12,8 +12,10 @@
 #' @return Contents of the .gcov.out file
 #'
 #' @examples
+#' library(MAGMA.Celltyping)
+#' ctd <- ewceData::ctd()  
 #' res = load.magma.results.file(path="Raw/adhd_formtcojo.txt.NEW.10UP.1DOWN.gov.out",
-#' annotLevel=1,ctd=ctd)
+#'                               annotLevel=1,ctd=ctd) 
 #'
 #' @export
 #' @importFrom dplyr rename
@@ -22,7 +24,12 @@
 #' @importFrom utils write.csv
 #' @importFrom rlang .data
 #' @importFrom purrr modify_at
-load.magma.results.file <- function(path,annotLevel,ctd,genesOutCOND=NA,EnrichmentMode="Linear",ControlForCT="BASELINE"){
+load.magma.results.file <- function(path,
+                                    annotLevel,
+                                    ctd,
+                                    genesOutCOND=NA,
+                                    EnrichmentMode="Linear",
+                                    ControlForCT="BASELINE"){
   # Check EnrichmentMode has correct values
   if(!EnrichmentMode %in% c("Linear","Top 10%")){stop("EnrichmentMode argument must be set to either 'Linear' or 'Top 10%")}
     
@@ -47,8 +54,18 @@ load.magma.results.file <- function(path,annotLevel,ctd,genesOutCOND=NA,Enrichme
   numCTinCTD = length(colnames(ctd[[annotLevel]]$specificity))
   numCTinRes = dim(res)[1]
   if(ControlForCT[1]=="BASELINE" & !isConditionedOnGWAS){
-    if(numCTinCTD!=numCTinRes){stop(sprintf("%s celltypes in ctd but %s in results file. Did you provide the correct annotLevel?",numCTinCTD,numCTinRes))}
-      res$COVAR = colnames(ctd[[annotLevel]]$specificity)
+    if(numCTinCTD!=numCTinRes){
+     if( abs(numCTinCTD-numCTinRes)>as.integer(numCTinRes*.5)){
+       stop(sprintf(">50% of celltypes missing. %s celltypes in ctd but %s in results file. Did you provide the correct annotLevel?",numCTinCTD,numCTinRes)) 
+     }
+      message(sprintf("%s celltypes in ctd but %s in results file. 
+                      Some cell-types may have been dropped due to 'variance is too low (set contains only one gene used in analysis)'.",numCTinCTD,numCTinRes))
+      message("<50% of celltypes missing. Attemping to fix by removing missing cell-types:\n   ",
+              paste(BiocGenerics::setdiff(colnames(ctd[[annotLevel]]$specificity), res$VARIABLE),collapse = "\n   "))
+      ctd_colnames <- colnames(ctd[[annotLevel]]$specificity)
+      res <- subset(res, VARIABLE %in% ctd_colnames) 
+      res$COVAR = ctd_colnames[ctd_colnames %in% res$VARIABLE]
+    } else { res$COVAR = colnames(ctd[[annotLevel]]$specificity) } 
   }else{
     #if(numCTinCTD!=(numCTinRes+1)){stop(sprintf("%s celltypes in ctd but %s in results file. Expected %s-1 in results file. Did you provide the correct annotLevel?",numCTinCTD,numCTinRes,numCTinRes))}  
       tmpF = tempfile()

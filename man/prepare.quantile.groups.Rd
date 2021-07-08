@@ -8,7 +8,7 @@ prepare.quantile.groups(
   ctd,
   specificity_species = "mouse",
   gwas_species = "human",
-  numberOfBins = 41
+  numberOfBins = 40
 )
 }
 \arguments{
@@ -28,6 +28,7 @@ Quantile groups are stored in an extra matrix ('quantiles') in the returned CTD.
 from the CTD data which are not 1:1 orthologs with the GWAS species.
 }
 \examples{
-ctd2 = lapply(ctd,filter_by_orthologs,one2one_ortholog_symbols = ortholog_data[,2])
-
+\dontrun{
+ctd <- prepare.quantile.groups(ewceData::ctd())
+} 
 }

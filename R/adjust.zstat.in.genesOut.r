@@ -16,7 +16,9 @@
 #' @importFrom stats lm
 #' @importFrom stats p.adjust
 #' @importFrom utils read.table
-adjust.zstat.in.genesOut <- function(ctd,magma_GenesOut_file=NA,sctSpecies="mouse"){
+adjust.zstat.in.genesOut <- function(ctd,
+                                     magma_GenesOut_file=NA,
+                                     sctSpecies="mouse"){
     allGenes = rownames(ctd[[1]]$specificity)
     
     if(sctSpecies=="mouse"){

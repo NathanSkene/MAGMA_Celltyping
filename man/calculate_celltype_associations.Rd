@@ -13,15 +13,16 @@ calculate_celltype_associations(
   genome_ref_path,
   specificity_species = "mouse",
   genesOutCOND = NA,
-  EnrichmentMode = "Linear"
+  EnrichmentMode = "Linear",
+  force_new = F
 )
 }
 \arguments{
-\item{ctd}{Cell type data strucutre containing $specificity_quantiles}
+\item{ctd}{Cell type data structure containing $specificity_quantiles}
 
-\item{gwas_sumstats_path}{Filepath of the summary statistics file}
+\item{gwas_sumstats_path}{File path of the summary statistics file}
 
-\item{analysis_name}{Used in filenames which area created}
+\item{analysis_name}{Used in file names which area created}
 
 \item{upstream_kb}{How many kb upstream of the gene should SNPs be included?}
 
@@ -35,18 +36,18 @@ from https://ctg.cncr.nl/software/MAGMA/ref_data/g1000_eur.zip)}
 \item{genesOutCOND}{[Optional] Path to a genes.out file to condition on. Used if you want to condition on a different GWAS.}
 
 \item{EnrichmentMode}{[Optional] Should either 'Linear' or 'Top 10\%' mode be used for testing enrichment?}
+
+\item{force_new}{[Optional] Force new MAGMA analyses even if the pre-existing results files are detected.}
 }
 \value{
-Filepath for the genes.out file
+File path for the genes.out file
 }
 \description{
-Assumes that you have already run map.snps.to.genes()
+Assumes that you have already run \code{map.snps.to.genes()}
 }
 \examples{
-ctAssocs = calculate_celltype_associations(EWCE::ctd,gwas_sumstats_path,
-gwas_sumstats_path = "PATH_TO_SUMSTATS",
-upstream_kb=10,downstream_kb=1.5,genome_ref_path="~/Downloads/g1000_eur/g1000_eur",
-specificity_species="mouse",
-EnrichmentMode="Top 10\%")
+\dontrun{
+ctAssocs = calculate_celltype_associations(ewceData::ctd(), gwas_sumstats_path, gwas_sumstats_path = "<PATH_TO_SUMSTATS>", upstream_kb=10, downstream_kb=1.5, genome_ref_path="<PATH_TO_g1000_eur>", specificity_species="mouse", EnrichmentMode="Top 10\%")
+}
 
 }

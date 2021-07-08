@@ -13,7 +13,10 @@
 #' magmaPaths = get.magma.paths(gwas_sumstats_path,upstream_kb,downstream_kb)
 #'
 #' @export
-get.magma.paths <- function(gwas_sumstats_path=NA,upstream_kb=NA,downstream_kb=NA,output_path=NA){
+get.magma.paths <- function(gwas_sumstats_path=NA,
+                            upstream_kb=NA,
+                            downstream_kb=NA,
+                            output_path=NA){
     # Error checking
     if(is.na(gwas_sumstats_path) & is.na(output_path)){stop("Either gwas_sumstats_path or output_path must be specified")}
     #if(!is.na(gwas_sumstats_path) & !is.na(output_path)){stop("Only gwas_sumstats_path or output_path should be specified, not both")}
@@ -43,7 +46,7 @@ get.magma.paths <- function(gwas_sumstats_path=NA,upstream_kb=NA,downstream_kb=N
         filePathPrefix = sprintf("%s/%s.%sUP.%sDOWN",pathMagmaFiles,gwasFileName,upstream_kb,downstream_kb)
         
         # Return the paths
-        magmaPaths = list(tiles=pathTiles,figs=pathFigs,files=pathMagmaFiles,prefix=prefix,filePathPrefix=filePathPrefix,gwasFileName=gwasFileName)    
+        magmaPaths = list(tiles=pathTiles,figs=pathFigs,files=pathMagmaFiles,prefix=prefix,filePathPrefix=filePathPrefix,gwasFileName=gwasFileName, gwasFilePath=gwas_sumstats_path)    
     }else{
         dir.create(sprintf("%s/MAGMA_Figures",output_path), showWarnings = FALSE)   
         pathTiles = sprintf("%s/MAGMA_Figures/Tileplots",output_path)

@@ -31,12 +31,12 @@ if(!"devtools" %in% row.names(installed.packages())){
 library(devtools)
 
 if(!"EWCE" %in% row.names(installed.packages())){
-  install_github("NathanSkene/EWCE")
+  devtools::install_github("NathanSkene/EWCE")
 }
 library(EWCE) 
 
 if(!"MAGMA.Celltyping" %in% row.names(installed.packages())){
-  install_github("NathanSkene/MAGMA_Celltyping")
+  devtools::install_github("NathanSkene/MAGMA_Celltyping")
 }
 library(MAGMA.Celltyping) # Note the "." instead of "_"
 
@@ -133,8 +133,11 @@ if(!file.exists(gwas_sumstats_path)){
 
 # Format it (i.e. column headers etc)
 tmpSumStatsPath = format_sumstats_for_magma(path=gwas_sumstats_path)
-gwas_sumstats_path_formatted = sprintf("%s.formatted",gwas_sumstats_path)
-file.copy(from=tmpSumStatsPath,to=gwas_sumstats_path_formatted,overwrite = TRUE)
+
+gwas_sumstats_path_formatted = gsub(".tsv",".formatted.tsv",gwas_sumstats_path)
+file.copy(from=tmpSumStatsPath,
+          to=gwas_sumstats_path_formatted,
+          overwrite = TRUE)
 ```
 
 

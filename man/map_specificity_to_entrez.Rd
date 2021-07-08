@@ -4,7 +4,7 @@
 \alias{map_specificity_to_entrez}
 \title{Map specificity to entrez}
 \usage{
-map_specificity_to_entrez(ctd, annotLevel, specificity_species)
+map_specificity_to_entrez(ctd, annotLevel, specificity_species, return_ctd = F)
 }
 \arguments{
 \item{ctd}{Cell type data structure. Must contain quantiles.}

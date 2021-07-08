@@ -9,25 +9,36 @@ calculate.celltype.enrichment.probabilities.wtLimma(
   magmaAdjZ,
   ctd,
   thresh = 1e-04,
-  sctSpecies = "mouse"
+  sctSpecies = "mouse",
+  annotLevel = 1,
+  celltypes = NULL,
+  return_all = F
 )
 }
 \arguments{
 \item{magmaAdjZ}{Output from adjust.zstat.in.genesOut()}
 
-\item{ctd}{Cell type data structure}
+\item{ctd}{CellTypeData object}
 
 \item{thresh}{A threshold on low specificity values (used to drop genes)}
 
 \item{sctSpecies}{Either 'human' or 'mouse'}
+
+\item{annotLevel}{CellTypeData level to test
+#'}
 }
 \description{
 Calculate celltype enrichments without MAGMA using adjusted MAGMA Z-statistic from .genes.out files
 }
 \examples{
-# The package stores an example genesOut file, so save this to a tempfile
+library(MAGMA.Celltyping)
+library(ewceData)
+ctd <- ewceData::ctd()
+
+ # The package stores an example genesOut file, so save this to a tempfile
 myGenesOut = tempfile()
 data.table::fwrite(MAGMA.Celltyping::genesOut,sep="\t",file=myGenesOut)
-magmaGenesOut = adjust.zstat.in.genesOut(EWCE::ctd,magma_GenesOut_file=myGenesOut,sctSpecies="mouse")
+magmaAdjZ = adjust.zstat.in.genesOut(ctd, magma_GenesOut_file=myGenesOut,sctSpecies="mouse")
+ps <- calculate.celltype.enrichment.probabilities.wtLimma(magmaAdjZ=magmaAdjZ, ctd=ctd)
 
 }
